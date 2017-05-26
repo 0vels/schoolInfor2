@@ -300,10 +300,10 @@ public class TopicAdapter extends BaseAdapter {
                 ReturnEntity returnEntity = SchoolInforManager.gson.fromJson(s, ReturnEntity.class);
                 if (returnEntity != null) {
                     if (returnEntity.getCode() == 1) {
-                        if (topicEntity.getThumbPersonsNickname().contains(myUserid)) {
-                            topicEntity.getThumbPersonsNickname().remove(myUserid);
+                        if (topicEntity.getThumbPersonsNickname().contains(myNikename)) {
+                            topicEntity.getThumbPersonsNickname().remove(myNikename);
                         } else {
-                            topicEntity.getThumbPersonsNickname().add(myUserid);
+                            topicEntity.getThumbPersonsNickname().add(myNikename);
 
                         }
                         TopicAdapter.this.notifyDataSetChanged();

@@ -16,8 +16,8 @@ import com.cdxy.schoolinforapplication.SchoolInforManager;
 import com.cdxy.schoolinforapplication.ScreenManager;
 import com.cdxy.schoolinforapplication.model.MessageReturnEntity;
 import com.cdxy.schoolinforapplication.model.message.MessageEntity;
-import com.cdxy.schoolinforapplication.ui.MainActivity;
 import com.cdxy.schoolinforapplication.ui.base.BaseActivity;
+import com.cdxy.schoolinforapplication.util.Constant;
 import com.cdxy.schoolinforapplication.util.HttpUtil;
 import com.cdxy.schoolinforapplication.util.SharedPreferenceManager;
 import com.google.gson.reflect.TypeToken;
@@ -47,8 +47,6 @@ public class MessageDetailActivity extends BaseActivity implements View.OnClickL
     Button querenbtn;
     @BindView(R.id.noseebtn)
     Button noseebtn;
-    @BindView(R.id.button7)
-    Button queren;
     @BindView(R.id.txt_message_detail_title)
     TextView txtMessageDetailTitle;
     @BindView(R.id.txt_message_detail_content)
@@ -61,8 +59,10 @@ public class MessageDetailActivity extends BaseActivity implements View.OnClickL
     TextView txtMessageDetailSendTime;
     @BindView(R.id.activity_message_detail)
     LinearLayout activityMessageDetail;
+    @BindView(R.id.ll_see_infor)
+    LinearLayout llSeeInfor;
     private MessageEntity messageEntity;
-    private String messageType;
+    private int messageType;
     private String T;
 
     @Override
@@ -71,7 +71,6 @@ public class MessageDetailActivity extends BaseActivity implements View.OnClickL
         setContentView(R.layout.activity_message_detail);
         ButterKnife.bind(this);
         ScreenManager.getScreenManager().pushActivity(this);
-        isTeacher();
         init();
         onClick();
         String title = messageEntity.getTitle();
@@ -80,16 +79,24 @@ public class MessageDetailActivity extends BaseActivity implements View.OnClickL
         String content = messageEntity.getContent();
         if (!TextUtils.isEmpty(content))
             txtMessageDetailContent.setText("  " + content);
-        String acceptGroup = messageEntity.getSendTo();
-        if (!TextUtils.isEmpty(acceptGroup))
-            txtMessageDetailAcceptGroup.setText(acceptGroup);
+        ArrayList<String> acceptGroup = messageEntity.getSendTo();
+        String acceptGroupString = "";
+        if (acceptGroup != null) {
+            if (acceptGroup.size() != 0) {
+                for (int i = 0; i < acceptGroup.size() - 1; i++) {
+                    acceptGroupString += acceptGroup.get(i) + "、";
+                }
+                acceptGroupString += acceptGroup.get(acceptGroup.size() - 1);
+            }
+        }
+        txtMessageDetailAcceptGroup.setText(acceptGroupString);
         String sender = messageEntity.getSendPersonName();
         if (!TextUtils.isEmpty(sender))
             txtMessageDetailSender.setText(sender);
         String sendTime = messageEntity.getTime();
         if (!TextUtils.isEmpty(sendTime))
             T = sendTime;
-            txtMessageDetailSendTime.setText(sendTime);
+        txtMessageDetailSendTime.setText(sendTime);
         int type = messageEntity.getMessageType();
 //        switch (messageType) {
 //            case Constant.MY_SEND_MESSAGE:
@@ -113,23 +120,20 @@ public class MessageDetailActivity extends BaseActivity implements View.OnClickL
         txtTitle.setText("消息详情");
         Intent intent = getIntent();
         messageEntity = (MessageEntity) intent.getSerializableExtra("message");
-    }
-
-
-    private void isTeacher(){
-        MainActivity mainActivity = new MainActivity();
-        if (mainActivity.isTeacher()){
-            queren.setVisibility(View.GONE);
+        messageType = intent.getIntExtra("message_type", 0);
+        if (messageType == Constant.MY_SEND_MESSAGE&&messageEntity.getMessageType()==1) {
+            //学生确认查看消息
+            String userid = SharedPreferenceManager.instance(MessageDetailActivity.this).getUserInfor().getUserid();
+            queren(messageEntity.getTID(), userid);
+            llSeeInfor.setVisibility(View.VISIBLE);
         }else {
-            querenbtn.setVisibility(View.GONE);
-            noseebtn.setVisibility(View.GONE);
+            llSeeInfor.setVisibility(View.GONE);
         }
-
     }
 
     private void onClick() {
 
-        //查看已确认学生列表
+        //已查看消息学生列表
         querenbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,6 +141,7 @@ public class MessageDetailActivity extends BaseActivity implements View.OnClickL
                 intent.putExtra("TID", messageEntity.getTID());
                 intent.putExtra("isQueren", "yes");
                 intent.putExtra("T", T);
+                intent.putExtra("message",messageEntity);
                 startActivity(intent);
             }
         });
@@ -155,17 +160,8 @@ public class MessageDetailActivity extends BaseActivity implements View.OnClickL
 
 
         //学生确认查看消息
-        queren.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Intent intent1 = new Intent(MessageDetailActivity.this, SeeMessageStudentsActivity.class);
-//                intent1.putExtra("TID", messageEntity.getTID());
-//                intent1.putExtra("isQueren", "no");
-//                startActivity(intent1);
-                String userid = SharedPreferenceManager.instance(MessageDetailActivity.this).getUserInfor().getUserid();
-                queren(messageEntity.getTID(), userid);
-            }
-        });
+        String userid = SharedPreferenceManager.instance(MessageDetailActivity.this).getUserInfor().getUserid();
+        queren(messageEntity.getTID(), userid);
 
     }
 

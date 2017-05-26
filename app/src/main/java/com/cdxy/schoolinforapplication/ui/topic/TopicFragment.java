@@ -67,6 +67,7 @@ public class TopicFragment extends BaseFragment {
     private TopicAdapter adapter;
     private List<TopicEntity> list;
     private int topicNummber;
+    private boolean isFrashing=false;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -80,6 +81,7 @@ public class TopicFragment extends BaseFragment {
                 adapter.notifyDataSetChanged();
                 if (refreshLayout.isRefreshing()) {
                     refreshLayout.setRefreshing(false);
+                    isFrashing=false;
                 }
                 progress.setVisibility(View.GONE);
                 MainActivity.isReturnFromAddTopic = false;
@@ -135,6 +137,7 @@ public class TopicFragment extends BaseFragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                isFrashing=true;
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -171,8 +174,10 @@ public class TopicFragment extends BaseFragment {
     }
 
     private void getAllTopic() {
+        if (!isFrashing){
+            handler.sendEmptyMessage(2);
+        }
         list.clear();
-        handler.sendEmptyMessage(2);
         Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {

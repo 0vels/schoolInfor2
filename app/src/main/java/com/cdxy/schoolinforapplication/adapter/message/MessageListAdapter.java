@@ -13,6 +13,7 @@ import com.cdxy.schoolinforapplication.R;
 import com.cdxy.schoolinforapplication.model.message.MessageEntity;
 import com.cdxy.schoolinforapplication.util.Constant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,14 +66,22 @@ public class MessageListAdapter extends BaseAdapter {
         String sender = entity.getSendPersonName();
         if (!TextUtils.isEmpty(sender))
             viewHolder.txtMessageSender.setText(sender);
-        String acceptGroup = entity.getSendTo();
-        if (!TextUtils.isEmpty(acceptGroup))
-            viewHolder.txtMessageAcceptGroup.setText(acceptGroup);
+        ArrayList<String> acceptGroup = entity.getSendTo();
+        String acceptGroupString = "";
+        if (acceptGroup != null) {
+            if (acceptGroup.size() != 0) {
+                for (int j = 0; j < acceptGroup.size() - 1; j++) {
+                    acceptGroupString += acceptGroup.get(j) + "、";
+                }
+                acceptGroupString += acceptGroup.get(acceptGroup.size() - 1);
+            }
+        }
+        viewHolder.txtMessageAcceptGroup.setText(acceptGroupString);
         String sendTime = entity.getTime();
         if (!TextUtils.isEmpty(sendTime))
             viewHolder.txtMessageSendTime.setText(sendTime);
         int messageType = entity.getMessageType();
-        if (messageFrom==Constant.MY_SEND_MESSAGE && messageType == 1)
+        if (messageFrom == Constant.MY_SEND_MESSAGE && messageType == 1)
             viewHolder.flagImportantMessage.setVisibility(View.VISIBLE);
         return view;
     }

@@ -14,12 +14,14 @@ import com.cdxy.schoolinforapplication.HttpUrl;
 import com.cdxy.schoolinforapplication.R;
 import com.cdxy.schoolinforapplication.SchoolInforManager;
 import com.cdxy.schoolinforapplication.ScreenManager;
-import com.cdxy.schoolinforapplication.adapter.message.SeeMessageStudentAdapter;
+import com.cdxy.schoolinforapplication.adapter.message.NotSeeMessageStudentAdapter;
 import com.cdxy.schoolinforapplication.model.QuerenOrNotReturnEntity;
+import com.cdxy.schoolinforapplication.model.message.MessageEntity;
 import com.cdxy.schoolinforapplication.model.message.SeeMeaaseStudentEntity;
 import com.cdxy.schoolinforapplication.ui.base.BaseActivity;
 import com.cdxy.schoolinforapplication.ui.widget.ScrollListView;
 import com.cdxy.schoolinforapplication.util.HttpUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +50,9 @@ public class SeeMessageStudentsActivity extends BaseActivity implements View.OnC
     ScrollListView scrollSeeMessageStudent;
     @BindView(R.id.activity_see_message_students)
     LinearLayout activitySeeMessageStudents;
-    private SeeMessageStudentAdapter adapter;
+    @BindView(R.id.tv_see_students_number)
+    TextView tvSeeStudentsNumber;
+    private NotSeeMessageStudentAdapter adapter;
     private List<SeeMeaaseStudentEntity> list;
     String isQueren;
     String T;
@@ -76,16 +80,19 @@ public class SeeMessageStudentsActivity extends BaseActivity implements View.OnC
 
     @Override
     public void init() {
-        if (isQueren.equals("yes")){
+        if (isQueren.equals("yes")) {
             txtTitle.setText("查看情况");
+            tvSeeStudentsNumber.setText("查看消息学生数：");
 //            btnRight.setText("未查看提醒");
-        }else {
+        } else {
             txtTitle.setText("未查看名单");
 //            btnRight.setText("未查看提醒");
+            tvSeeStudentsNumber.setText("未查看消息学生数：");
+
         }
 
         list = new ArrayList<>();
-        adapter = new SeeMessageStudentAdapter(SeeMessageStudentsActivity.this, list);
+        adapter = new NotSeeMessageStudentAdapter(SeeMessageStudentsActivity.this, list, (MessageEntity) getIntent().getSerializableExtra("message"), SeeMessageStudentsActivity.this, isQueren);
         scrollSeeMessageStudent.setAdapter(adapter);
     }
 
@@ -96,8 +103,8 @@ public class SeeMessageStudentsActivity extends BaseActivity implements View.OnC
                 ScreenManager.getScreenManager().popActivty(this);
                 break;
             case R.id.btn_right:
-                Intent intent=new Intent(SeeMessageStudentsActivity.this,NotSeeMessageStudentsActivity.class);
-                intent.putExtra("messageEntity",getIntent().getSerializableExtra("messageEntity"));
+                Intent intent = new Intent(SeeMessageStudentsActivity.this, NotSeeMessageStudentsActivity.class);
+                intent.putExtra("messageEntity", getIntent().getSerializableExtra("messageEntity"));
                 startActivity(intent);
         }
     }
@@ -125,14 +132,14 @@ public class SeeMessageStudentsActivity extends BaseActivity implements View.OnC
                     list.addAll(seeMeaaseStudentEntities);
                     adapter.notifyDataSetChanged();
                     layoutShowProgressBar.setVisibility(View.GONE);
-                    txtSeeMessageStudentNumber.setText(seeMeaaseStudentEntities.size()+"");
+                    txtSeeMessageStudentNumber.setText(seeMeaaseStudentEntities.size() + "");
                 }
             }
         }.execute();
     }
 
 
-    private List<SeeMeaaseStudentEntity> getQuerenOrNot(final int TID,final String isQueren) {
+    private List<SeeMeaaseStudentEntity> getQuerenOrNot(final int TID, final String isQueren) {
         final List<SeeMeaaseStudentEntity> returnList = new ArrayList<>();
         Observable.create(new Observable.OnSubscribe<String>() {
             @Override
@@ -140,7 +147,7 @@ public class SeeMessageStudentsActivity extends BaseActivity implements View.OnC
                 OkHttpClient okHttpClient = HttpUtil.getClient();
                 SeeMeaaseStudentEntity messageEntity = new SeeMeaaseStudentEntity();
 
-                Request request = new Request.Builder().url(HttpUrl.GET_QUERENORNOT+"?TID="+TID+"&isQueren="+isQueren)
+                Request request = new Request.Builder().url(HttpUrl.GET_QUERENORNOT + "?TID=" + TID + "&isQueren=" + isQueren)
                         .get()
                         .build();
                 try {
@@ -164,7 +171,7 @@ public class SeeMessageStudentsActivity extends BaseActivity implements View.OnC
                     for (int j = 0; j < messageNumber; j++) {
 //                        long TID = seeMeaaseStudentEntityList.get(j).getTID();
                         String userid = seeMeaaseStudentEntityList.get(j).getUserid();
-                        if (TID!=0 && (!TextUtils.isEmpty(userid))) {
+                        if (TID != 0 && (!TextUtils.isEmpty(userid))) {
                             SeeMeaaseStudentEntity messageEntity = new SeeMeaaseStudentEntity();
                             messageEntity = seeMeaaseStudentEntityList.get(j);
                             messageEntity.setQueshi(T);

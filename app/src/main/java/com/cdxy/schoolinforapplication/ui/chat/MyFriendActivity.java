@@ -56,38 +56,41 @@ public class MyFriendActivity extends BaseActivity implements View.OnClickListen
         ButterKnife.bind(this);
         ScreenManager.getScreenManager().pushActivity(this);
         init();
-        IWxCallback callback = new IWxCallback() {
-            @Override
-            public void onSuccess(Object... result) {
-
-                List<IYWDBContact> contactsFromCache = LoginActivity.iywContactService.getContactsFromCache();
-                //iywContactService.syncContactsOnlineStatus((List<IYWContact>) (List) contactsFromCache,iWxCallbackIsOnline);
-                for (IYWDBContact iywdbContact : contactsFromCache) {
-                    MyFriendEntity entity = new MyFriendEntity();
-                    entity.setName(iywdbContact.getShowName());
-                    entity.setIcon(iywdbContact.getAvatarPath());
-                    entity.setUserId(iywdbContact.getUserId());
-                    list.add(entity);
-                }
-                Log.i("iywContactService", list.toString());
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onProgress(int progress) {
-            }
-
-
-            @Override
-            public void onError(int code, String info) {
-                toast("获取好友列表出错");
-            }
-        };
-        LoginActivity.iywContactService.syncContacts(callback);
 
 
     }
+private void getMyFriends(){
+    list.clear();
+    IWxCallback callback = new IWxCallback() {
+        @Override
+        public void onSuccess(Object... result) {
 
+            List<IYWDBContact> contactsFromCache = LoginActivity.iywContactService.getContactsFromCache();
+            //iywContactService.syncContactsOnlineStatus((List<IYWContact>) (List) contactsFromCache,iWxCallbackIsOnline);
+            for (IYWDBContact iywdbContact : contactsFromCache) {
+                MyFriendEntity entity = new MyFriendEntity();
+                entity.setName(iywdbContact.getShowName());
+                entity.setIcon(iywdbContact.getAvatarPath());
+                entity.setUserId(iywdbContact.getUserId());
+                list.add(entity);
+            }
+            Log.i("iywContactService", list.toString());
+            adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onProgress(int progress) {
+        }
+
+
+        @Override
+        public void onError(int code, String info) {
+            toast("获取好友列表出错");
+        }
+    };
+    LoginActivity.iywContactService.syncContacts(callback);
+
+}
     @Override
     public void init() {
         txtTitle.setText("我的好友");
@@ -95,6 +98,7 @@ public class MyFriendActivity extends BaseActivity implements View.OnClickListen
         adapter = new MyFriendsAdapter(list, MyFriendActivity.this);
         getCreator();
         swiplistMyFriend.setAdapter(adapter);
+        getMyFriends();
         swiplistMyFriend.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -193,7 +197,7 @@ private void updateName(String userId){
         @Override
         public void onSuccess(Object... result) {
             // onSuccess参数为空
-            adapter.notifyDataSetChanged();
+            getMyFriends();
 
         }
 

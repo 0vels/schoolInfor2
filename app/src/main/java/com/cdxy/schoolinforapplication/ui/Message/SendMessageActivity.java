@@ -234,7 +234,7 @@ public class SendMessageActivity extends BaseActivity implements View.OnClickLis
             public void call(Subscriber<? super String> subscriber) {
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                 OkHttpClient okHttpClient = HttpUtil.getClient();
-                SendMessageEntity sendMessageEntity = new SendMessageEntity(title, content, messageTye, sendTo, SharedPreferenceManager.instance(SendMessageActivity.this).getUserInfor().getUserid(), isSelectAll);
+                SendMessageEntity sendMessageEntity = new SendMessageEntity(title, content, messageTye, sendTo, SharedPreferenceManager.instance(SendMessageActivity.this).getUserInfor().getXingming(), isSelectAll);
                 String json = SchoolInforManager.gson.toJson(sendMessageEntity);
                 RequestBody formBody = RequestBody.create(JSON, json);
 //                Request request = new Request.Builder().url(HttpUrl.SEND_MESSAGE)

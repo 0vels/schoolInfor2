@@ -12,11 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cdxy.schoolinforapplication.R;
 import com.cdxy.schoolinforapplication.model.message.MessageEntity;
-import com.cdxy.schoolinforapplication.model.message.NotSeeMessageStudentEntity;
+import com.cdxy.schoolinforapplication.model.message.SeeMeaaseStudentEntity;
 import com.cdxy.schoolinforapplication.ui.widget.ChooseWayDialog;
 import com.cdxy.schoolinforapplication.util.Constant;
 
@@ -31,16 +32,18 @@ import butterknife.ButterKnife;
 
 public class NotSeeMessageStudentAdapter extends BaseAdapter {
     private Context context;
-    private List<NotSeeMessageStudentEntity> list;
+    private List<SeeMeaaseStudentEntity> list;
     private MessageEntity messageEntity;
     private ChooseWayDialog chooseWayDialog;
     private Activity activity;
+    private String isQuee;
 
-    public NotSeeMessageStudentAdapter(Context context, List<NotSeeMessageStudentEntity> list, MessageEntity messageEntity, Activity activity) {
+    public NotSeeMessageStudentAdapter(Context context, List<SeeMeaaseStudentEntity> list, MessageEntity messageEntity, Activity activity, String isQuee) {
         this.context = context;
         this.list = list;
         this.messageEntity = messageEntity;
         this.activity = activity;
+        this.isQuee = isQuee;
     }
 
     @Override
@@ -68,20 +71,25 @@ public class NotSeeMessageStudentAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
-        final NotSeeMessageStudentEntity entity = (NotSeeMessageStudentEntity) getItem(i);
+        if (isQuee.equals("yes")){
+            viewHolder.lyIsCall.setVisibility(View.GONE);
+        }else {
+            viewHolder.lyIsCall.setVisibility(View.VISIBLE);
+        }
+        final SeeMeaaseStudentEntity entity = (SeeMeaaseStudentEntity) getItem(i);
         String name = entity.getName();
         if (!TextUtils.isEmpty(name))
             viewHolder.txtNotSeeMessageStudentName.setText(name);
-        String id = entity.getId();
+        String id = entity.getXuehao();
         if (!TextUtils.isEmpty(id))
             viewHolder.txtNotSeeMessageStudentId.setText(id);
-        String department = entity.getDepartment();
+        String department = entity.getXibie();
         if (!TextUtils.isEmpty(department))
             viewHolder.txtNotSeeMessageStudentDepartment.setText(department);
-        String clazz = entity.getClazz();
+        String clazz = entity.getBanji();
         if (!TextUtils.isEmpty(clazz))
             viewHolder.txtNotSeeMessageStudentClazz.setText(clazz);
-        final String phoneNumber = entity.getPhoneNumber();
+        final String phoneNumber = entity.getUserid();
         if (!TextUtils.isEmpty(phoneNumber))
             viewHolder.txtNoSeeMessageStudentPhoneNumber.setText(phoneNumber);
         viewHolder.txtNoSeeMessageStudentPhoneNumber.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +133,12 @@ public class NotSeeMessageStudentAdapter extends BaseAdapter {
         return view;
     }
 
+
+    @Override
+    public boolean isEnabled(int position) {
+        return false;
+    }
+
     static class ViewHolder {
         @BindView(R.id.txt_not_see_message_student_id)
         TextView txtNotSeeMessageStudentId;
@@ -136,14 +150,11 @@ public class NotSeeMessageStudentAdapter extends BaseAdapter {
         TextView txtNotSeeMessageStudentClazz;
         @BindView(R.id.txt_no_see_message_student_phoneNumber)
         TextView txtNoSeeMessageStudentPhoneNumber;
+        @BindView(R.id.ly_is_call)
+        LinearLayout lyIsCall;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
-    }
-
-    @Override
-    public boolean isEnabled(int position) {
-        return false;
     }
 }

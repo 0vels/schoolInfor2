@@ -90,6 +90,7 @@ public class MessageListActivity extends BaseActivity implements View.OnClickLis
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(MessageListActivity.this, MessageDetailActivity.class);
                 MessageEntity entity = list.get(i);
+                intent.putExtra("message_type",messageType);
                 intent.putExtra("message", entity);
                 startActivity(intent);
             }
@@ -307,7 +308,7 @@ public class MessageListActivity extends BaseActivity implements View.OnClickLis
 //                List<MessageEntity> entityList = new ArrayList<>();
 //                entityList.add(entity1);
 //                entityList.add(entity2);
-                return getMyMessage(SharedPreferenceManager.instance(MessageListActivity.this).getUserInfor().getUserid());
+                return getMyMessage(SharedPreferenceManager.instance(MessageListActivity.this).getUserInfor().getXingming());
             }
 
             @Override

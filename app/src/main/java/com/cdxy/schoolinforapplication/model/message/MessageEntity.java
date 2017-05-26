@@ -1,6 +1,7 @@
 package com.cdxy.schoolinforapplication.model.message;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by huihui on 2016/12/27.
@@ -16,16 +17,16 @@ public class MessageEntity implements Serializable {
     //通知发布时间，服务器接收到老师发来的时间
     private String content;//通知内容
     private String title;//通知标题
-    private String sendTo;//接收群体
+    private ArrayList<String> sendTolist;//接收群体
 
     public MessageEntity() {
     }
 
-    public MessageEntity(int messageType, String sendPersonName, String time, String sendTo,String title, String content) {
+    public MessageEntity(int messageType, String sendPersonName, String time, ArrayList<String> sendTolist,String title, String content) {
         this.messageType = messageType;
         this.sendPersonName = sendPersonName;
         this.time = time;
-        this.sendTo = sendTo;
+        this.sendTolist = sendTolist;
         this.title = title;
         this.content = content;
     }
@@ -86,12 +87,12 @@ public class MessageEntity implements Serializable {
         this.title = title;
     }
 
-    public String getSendTo() {
-        return sendTo;
+    public ArrayList<String> getSendTo() {
+        return sendTolist;
     }
 
-    public void setSendTo(String sendTo) {
-        this.sendTo = sendTo;
+    public void setSendTo(ArrayList<String> sendTolist) {
+        this.sendTolist = sendTolist;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class MessageEntity implements Serializable {
                 "messageType=" + messageType +
                 ", sendPersonName='" + sendPersonName + '\'' +
                 ", time='" + time + '\'' +
-                ", sendTo='" + sendTo + '\'' +
+                ", sendTolist='" + sendTolist + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 '}';
